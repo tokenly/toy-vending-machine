@@ -1,0 +1,33 @@
+{
+    "name": "tokenly/toy-vending-machine",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Devon Weller",
+            "email": "dweller@tokenly.co"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "files": [
+            "vendor/redbeanphp/rb.php"
+        ]
+    },
+    "repositories": [
+        {
+            "package": {
+                "dist": {
+                    "type": "tar",
+                    "url": "http://www.redbeanphp.com/downloadredbean.php"
+                },
+                "name": "redbeanphp",
+                "version": "4.1.4"
+            },
+            "type": "package"
+        }
+    ],
+    "require": {
+        "tokenly/xchain-client": "dev-master",
+        "redbeanphp": "4.1.*"
+    }
+}

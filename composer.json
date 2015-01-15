@@ -28,6 +28,7 @@
     ],
     "require": {
         "tokenly/xchain-client": "dev-master",
-        "redbeanphp": "4.1.*"
+        "redbeanphp": "4.1.*",
+        "deweller/cliopts": "dev-master"
     }
 }

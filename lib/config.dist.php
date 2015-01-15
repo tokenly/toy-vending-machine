@@ -14,16 +14,25 @@ return [
         'webhook_url'        => 'http://my.website.co/receive_webhook.php',
         'payment_address_id' => 'xxxxxxxx-xxxx-4xxx-1xxx-xxxxxxxxxxxx', // fill this with the uuid of the payment address
 
-        // in/out config
-        'sell' => [
-            'in'   => 'BTC',
-            'out'  => 'SOUP',
-            'rate' => 999,  // receive 1 BTC and send 999 SOUP
+        // blacklist addresses
+        // in order to load up your vending machine
+        //   transactions from these addresses will be ignored for vending
+        'blacklisted_addresses' => [
+            '1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         ],
-        'redeem' => [
-            'in'   => 'SOUP',
-            'out'  => 'BTC',
-            'rate' => 0.001,  // receive 1 SOUP and send 0.001 BTC
+
+        // in/out config
+        'exchanges' => [
+            'sell' => [
+                'in'   => 'BTC',
+                'out'  => 'SOUP',
+                'rate' => 999,  // receive 1 BTC and send 999 SOUP
+            ],
+            'redeem' => [
+                'in'   => 'SOUP',
+                'out'  => 'BTC',
+                'rate' => 0.001,  // receive 1 SOUP and send 0.001 BTC
+            ],
         ],
     ],
 ];

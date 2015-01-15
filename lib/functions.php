@@ -14,7 +14,11 @@ function simpleLog($text) {
 // Data Store
 
 function initDB() {
-    R::setup('sqlite:'.APPLICATION_ROOT.'/data/data.db');
+    static $INITED;
+    if (!isset($INITED)) {
+        R::setup('sqlite:'.APPLICATION_ROOT.'/data/data.db');
+        $INITED = true;
+    }
 }
 
 function findOrCreateTransaction($txid) {
@@ -26,6 +30,8 @@ function findOrCreateTransaction($txid) {
 }
 
 function newTransaction($txid, $confirmations=0, $processed=false, $processed_txid='', $timestamp=null) {
+    initDB();
+
     $tx = R::dispense('tx');
 
     $tx->txid           = $txid;
@@ -35,21 +41,29 @@ function newTransaction($txid, $confirmations=0, $processed=false, $processed_tx
     $tx->timestamp      = ($timestamp === null ? time() : $timestamp);
 
     $id = R::store( $tx );
-    return $id;
+    return $tx;
 }
 
 function storeTransaction($tx) {
+    initDB();
+
     R::store($tx);
 }
 
 function findAllTransactions() {
+    initDB();
+
     $txs = R::getAll('SELECT * FROM `tx` ORDER BY `timestamp`'); 
     return $txs;
 }
 function findTransactionByTXID($txid) {
+    initDB();
+
     return R::findOne( 'tx', ' txid = ? ', [ $txid ] );
 }
 function deleteTransaction($tx) {
+    initDB();
+
     R::trash($tx); 
 }
 

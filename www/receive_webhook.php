@@ -33,14 +33,23 @@ simpleLog("Notification received: ".json_encode($notification, 192));
 
 
 // check for a receive event and then execute the swap
+simpleLog("\$notification['event']=".json_encode($notification['event'], 192));
 if ($notification['event'] == 'receive') {
     $tx_record = findOrCreateTransaction($event['txid']);
-    if (!$tx_record->processed AND $notification['confirmed']) {
-        $was_processed = false;
+    if (!$tx_record) { throw new Exception("Unable to access database", 1); }
+
+    // check for blacklisted sources
+    $should_process = !in_array($notification['sources'][0], $config['gateway']['blacklisted_addresses']);
+    if (!$should_process) {
+        simpleLog("ignoring send from {$notification['sources'][0]}");
+    }
+
+    simpleLog("\$tx_record=".json_encode($tx_record, 192));
+    if ($should_process AND !$tx_record->processed AND $notification['confirmed']) {
 
         // this transaction has not been processed yet
         // calculate the send
-        foreach ($config['gateway'] as $io_type => $exchange_config) {
+        foreach ($config['gateway']['exchanges'] as $io_type => $exchange_config) {
             if ($notification['asset'] == $exchange_config['in']) {
                 // we recieved an asset - exchange 'in' for 'out'
 

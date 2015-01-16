@@ -19,49 +19,50 @@ require(APPLICATION_ROOT.'/lib/functions.php');
 setupWebErrorHandler();
 
 // log the raw request
-simpleLog("Incoming webhook notification.  Raw data: ".file_get_contents('php://input'));
+simpleLog("Incoming webhook notification.");
 
 
 // receive the notification
 //   this will throw an Exception if it fails
 $receiver = new Tokenly\XChainClient\WebHookReceiver($config['xchain']['api_token'], $config['xchain']['api_secret']);
 $webhook_data = $receiver->validateAndParseWebhookNotificationFromCurrentRequest();
-$notification = $webhook_data['payload'];
+$xchain_notification = $webhook_data['payload'];
 
-// log the notification
-simpleLog("Notification received: ".json_encode($notification, 192));
 
 
 // check for a receive event and then execute the swap
-simpleLog("\$notification['event']=".json_encode($notification['event'], 192));
-if ($notification['event'] == 'receive') {
-    $tx_record = findOrCreateTransaction($event['txid']);
+if ($xchain_notification['event'] == 'receive') {
+    // load or create a new transaction from the database
+    $tx_record = findOrCreateTransaction($xchain_notification['txid']);
     if (!$tx_record) { throw new Exception("Unable to access database", 1); }
 
+
     // check for blacklisted sources
-    $should_process = !in_array($notification['sources'][0], $config['gateway']['blacklisted_addresses']);
-    if (!$should_process) {
-        simpleLog("ignoring send from {$notification['sources'][0]}");
+    $should_process = !in_array($xchain_notification['sources'][0], $config['gateway']['blacklisted_addresses']);
+    if (in_array($xchain_notification['notifiedAddress'], $xchain_notification['sources'])) { $should_process = false; }
+    if (!$should_process) { simpleLog("ignoring send from {$xchain_notification['sources'][0]}"); }
+
+
+    if ($should_process AND $tx_record->processed) {
+        simpleLog("Transaction {$xchain_notification['txid']} has already been processed.  We'll ignore it.", 192);
     }
 
-    simpleLog("\$tx_record=".json_encode($tx_record, 192));
-    if ($should_process AND !$tx_record->processed AND $notification['confirmed']) {
-
+    if ($should_process AND !$tx_record->processed AND $xchain_notification['confirmed']) {
         // this transaction has not been processed yet
         // calculate the send
         foreach ($config['gateway']['exchanges'] as $io_type => $exchange_config) {
-            if ($notification['asset'] == $exchange_config['in']) {
+            if ($xchain_notification['asset'] == $exchange_config['in']) {
                 // we recieved an asset - exchange 'in' for 'out'
 
                 // assume the first source should get paid
-                $destination = $notification['sources'][0];
+                $destination = $xchain_notification['sources'][0];
 
                 // calculate the receipient's quantity and asset
-                $quantity = $notification['quantity'] * $exchange_config['rate'];
+                $quantity = $xchain_notification['quantity'] * $exchange_config['rate'];
                 $asset = $exchange_config['out'];
 
-                // log the attempt
-                simpleLog("Received {$notification['quantity']} {$notification['asset']} from {$notification['sources'][0]}.  Will vend {$quantity} {$asset} to {$destination}.");
+                // log the attempt to send
+                simpleLog("Received {$xchain_notification['quantity']} {$xchain_notification['asset']} from {$xchain_notification['sources'][0]}.  Will vend {$quantity} {$asset} to {$destination}.");
 
                 // call xchain
                 $xchain_client = new Tokenly\XChainClient\Client($config['xchain']['url'], $config['xchain']['api_token'], $config['xchain']['api_secret']);

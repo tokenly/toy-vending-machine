@@ -15,7 +15,8 @@ function simpleLog($text) {
 
 function initDB() {
     static $INITED;
-    if (!isset($INITED)) {
+    if ($INITED === null) {
+        echo "SETUP\n";
         R::setup('sqlite:'.APPLICATION_ROOT.'/data/data.db');
         $INITED = true;
     }

@@ -284,12 +284,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tokenly/xchain-client.git",
-                "reference": "28a2d5d56b7bc40666d77cb3c200df233550888d"
+                "reference": "38f32d512fac612facf94e99b70c045f376c76f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tokenly/xchain-client/zipball/28a2d5d56b7bc40666d77cb3c200df233550888d",
-                "reference": "28a2d5d56b7bc40666d77cb3c200df233550888d",
+                "url": "https://api.github.com/repos/tokenly/xchain-client/zipball/38f32d512fac612facf94e99b70c045f376c76f4",
+                "reference": "38f32d512fac612facf94e99b70c045f376c76f4",
                 "shasum": ""
             },
             "require": {
@@ -318,7 +318,7 @@
                 }
             ],
             "description": "A library",
-            "time": "2015-01-08 17:14:45"
+            "time": "2015-01-15 19:46:39"
         }
     ],
     "packages-dev": [],

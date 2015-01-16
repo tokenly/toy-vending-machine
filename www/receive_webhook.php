@@ -79,6 +79,9 @@ if ($xchain_notification['event'] == 'receive') {
     }
 }
 
+if ($xchain_notification['event'] == 'block') {
+    simpleLog("Received new block event.  New block {$xchain_notification['hash']} height is {$xchain_notification['height']}.");
+}
 
 // everything is ok - return a 200 OK response
 echo "done";
